@@ -33,7 +33,9 @@ const router = createBrowserRouter([
       { path: '*', element: <NotFound /> },
     ],
   },
-])
+], {
+  basename: '/tech-va-portfolio',
+})
 
 function App() {
   return (
