@@ -1,0 +1,264 @@
+import { useMemo, useState } from 'react'
+import emailjs from '@emailjs/browser'
+import GlassCard from '../components/GlassCard'
+import SectionHeader from '../components/SectionHeader'
+import PrimaryButton from '../components/PrimaryButton'
+import AnimatedIcon from '../components/icons/AnimatedIcon'
+import { ERROR_MESSAGES } from '../config/errorMessages'
+import { User, Mail, MessageSquare, Send, Check, AlertCircle, Loader2 } from '../components/icons/icons'
+
+const initialForm = {
+  name: '',
+  email: '',
+  subject: '',
+  message: '',
+}
+
+function Contact() {
+  const [form, setForm] = useState(initialForm)
+  const [errors, setErrors] = useState({})
+  const [status, setStatus] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const config = useMemo(
+    () => ({
+      serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+    }),
+    [],
+  )
+
+  const validate = () => {
+    const nextErrors = {}
+    if (!form.name.trim()) nextErrors.name = 'Full name is required.'
+    if (!form.email.trim()) nextErrors.email = 'Email is required.'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) nextErrors.email = 'Enter a valid email.'
+    if (!form.subject.trim()) nextErrors.subject = 'Subject is required.'
+    if (!form.message.trim()) nextErrors.message = 'Message is required.'
+    return nextErrors
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const validation = validate()
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation)
+      setStatus({
+        type: 'error',
+        message: ERROR_MESSAGES.CONTACT_VALIDATION_ERROR.message,
+      })
+      return
+    }
+
+    if (!config.serviceId || !config.templateId || !config.publicKey) {
+      setStatus({
+        type: 'error',
+        message: 'EmailJS environment variables are missing. Check your .env settings.',
+      })
+      return
+    }
+
+    setIsSubmitting(true)
+    setStatus(null)
+
+    try {
+      await emailjs.send(
+        config.serviceId,
+        config.templateId,
+        {
+          from_name: form.name,
+          from_email: form.email,
+          subject: form.subject,
+          message: form.message,
+        },
+        {
+          publicKey: config.publicKey,
+        },
+      )
+
+      setStatus({
+        type: 'success',
+        message: 'Message sent successfully. You should receive a confirmation email shortly.',
+      })
+      setForm(initialForm)
+      setErrors({})
+    } catch (err) {
+      // User-safe error message
+      setStatus({
+        type: 'error',
+        message: ERROR_MESSAGES.CONTACT_SEND_ERROR.message,
+      })
+      if (import.meta.env.DEV) {
+        console.error('[Contact Form Error]', err)
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      <SectionHeader
+        title="Contact Me"
+        subtitle="Share a project, request, or support need. I'll get back to you as soon as possible."
+      />
+
+      <GlassCard className="p-6 sm:p-8">
+        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-white" htmlFor="name">
+                <AnimatedIcon
+                  icon={User}
+                  size={16}
+                  color="text-navy-300"
+                  animationType="none"
+                  ariaLabel={null}
+                />
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-slate-300/50 focus:border-navy-300 focus:outline-none transition-colors"
+                placeholder="Your name"
+              />
+              {errors.name ? <p className="text-sm text-red-200/90">{errors.name}</p> : null}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-white" htmlFor="email">
+                <AnimatedIcon
+                  icon={Mail}
+                  size={16}
+                  color="text-navy-300"
+                  animationType="none"
+                  ariaLabel={null}
+                />
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-slate-300/50 focus:border-navy-300 focus:outline-none transition-colors"
+                placeholder="name@email.com"
+              />
+              {errors.email ? <p className="text-sm text-red-200/90">{errors.email}</p> : null}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-white" htmlFor="subject">
+              <AnimatedIcon
+                icon={MessageSquare}
+                size={16}
+                color="text-navy-300"
+                animationType="none"
+                ariaLabel={null}
+              />
+              Subject
+            </label>
+            <input
+              id="subject"
+              name="subject"
+              type="text"
+              value={form.subject}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-slate-300/50 focus:border-navy-300 focus:outline-none transition-colors"
+              placeholder="Project inquiry, support, collaboration"
+            />
+            {errors.subject ? <p className="text-sm text-red-200/90">{errors.subject}</p> : null}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-white" htmlFor="message">
+              <AnimatedIcon
+                icon={MessageSquare}
+                size={16}
+                color="text-navy-300"
+                animationType="none"
+                ariaLabel={null}
+              />
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              value={form.message}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-slate-300/50 focus:border-navy-300 focus:outline-none transition-colors"
+              placeholder="Share context, goals, timelines, and success criteria."
+            />
+            {errors.message ? <p className="text-sm text-red-200/90">{errors.message}</p> : null}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <PrimaryButton type="submit" disabled={isSubmitting} className="px-6 py-3">
+              {isSubmitting ? (
+                <>
+                  <span>Sending…</span>
+                  <AnimatedIcon
+                    icon={Loader2}
+                    size={16}
+                    color="inherit"
+                    animationType="spin"
+                    ariaLabel={null}
+                  />
+                </>
+              ) : (
+                <>
+                  <span>Send Message</span>
+                  <AnimatedIcon
+                    icon={Send}
+                    size={16}
+                    color="inherit"
+                    animationType="hover-slide"
+                    ariaLabel={null}
+                  />
+                </>
+              )}
+            </PrimaryButton>
+            <span className="text-sm text-slate-200/80">Responses will be routed to Gmail.</span>
+          </div>
+
+          {status ? (
+            <div
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold ${
+                status.type === 'success' ? 'bg-emerald-500/15 text-emerald-100' : 'bg-red-500/15 text-red-100'
+              }`}
+              role="status"
+              aria-live="polite"
+            >
+              <AnimatedIcon
+                icon={status.type === 'success' ? Check : AlertCircle}
+                size={18}
+                color="inherit"
+                animationType={status.type === 'success' ? 'pulse' : 'none'}
+                ariaLabel={null}
+              />
+              <span>{status.message}</span>
+            </div>
+          ) : null}
+        </form>
+      </GlassCard>
+    </div>
+  )
+}
+
+export default Contact

@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import './styles/animations.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #eaf1ff;
+  background: #0b1426;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: radial-gradient(circle at 20% 20%, rgba(80, 130, 255, 0.15), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(61, 106, 255, 0.12), transparent 40%),
+    linear-gradient(145deg, #0a1629 0%, #0c1f3b 50%, #08101e 100%);
+  color: #e7ecf6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  width: 520px;
+  height: 520px;
+  border-radius: 9999px;
+  filter: blur(110px);
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::before {
+  top: -160px;
+  left: -140px;
+  background: radial-gradient(circle, rgba(104, 162, 255, 0.35), rgba(41, 86, 165, 0.08));
+}
+
+body::after {
+  bottom: -180px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(50, 107, 255, 0.35), rgba(13, 31, 69, 0.1));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid #7594fb;
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.glass-surface {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 22px 60px rgba(6, 15, 35, 0.32);
+}
+
+.badge-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #eaf1ff;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+}
+
+.shadow-faint {
+  box-shadow: 0 12px 30px rgba(8, 18, 38, 0.45);
+}
