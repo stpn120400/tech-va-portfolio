@@ -44,7 +44,7 @@ function Home() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <PrimaryButton to="/portfolio">View Portfolio</PrimaryButton>4
+              <PrimaryButton to="/portfolio">View Portfolio</PrimaryButton>
               <a
                 href={resumePdf}
                 download="Agustinez_Tech_VA_Resume.pdf"
