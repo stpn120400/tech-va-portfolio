@@ -2,6 +2,7 @@ import GlassCard from '../components/GlassCard'
 import SectionHeader from '../components/SectionHeader'
 import PersonalInfoCard from '../components/PersonalInfoCard'
 import aboutData from '../data/about.js'
+import SkillsSection from '../components/ui/SkillsSection'
 
 function About() {
   return (
@@ -13,12 +14,12 @@ function About() {
 
       <PersonalInfoCard aboutData={aboutData} />
 
+
       <div className="grid gap-6 lg:grid-cols-2">
         <GlassCard className="p-6 sm:p-7">
           <h3 className="text-xl font-semibold text-white">Career Objectives</h3>
           <p className="mt-3 text-slate-200/85">{aboutData.careerObjectives}</p>
         </GlassCard>
-
         <GlassCard className="p-6 sm:p-7">
           <h3 className="text-xl font-semibold text-white">Short Bio</h3>
           <p className="mt-3 text-slate-200/85">{aboutData.shortBio}</p>
@@ -30,7 +31,11 @@ function About() {
           <h3 className="text-xl font-semibold text-white">Education</h3>
           <ul className="mt-3 space-y-2 text-slate-200/85">
             {aboutData.education && aboutData.education.map((item, idx) => (
-              <li key={idx}>• {item.program ? `${item.program}, ${item.school} (${item.years})` : item}</li>
+              <li key={idx}>
+                <span className="font-bold text-white">{item.school}</span><br />
+                <span>{item.program}</span><br />
+                <span className="text-sm text-slate-300/80">{item.years}</span>
+              </li>
             ))}
           </ul>
         </GlassCard>
@@ -56,6 +61,10 @@ function About() {
           </div>
         </GlassCard>
       </div>
+
+      {/* Skills Section */}
+        <SkillsSection />
+        
     </div>
   )
 }

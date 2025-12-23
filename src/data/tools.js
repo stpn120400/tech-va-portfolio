@@ -6,6 +6,9 @@ export const coreTools = [
   { key: 'google', label: 'Google Workspace', icon: 'Mail' },
   { key: 'notion', label: 'Notion / Airtable', icon: 'Lightbulb' },
   { key: 'apis', label: 'APIs & Webhooks', icon: 'Code2' },
+  { key: 'openai', label: 'OpenAI / AI Tools', icon: 'Robot' },
+  { key: 'highlevel', label: 'GoHighLevel', icon: 'Briefcase' },
+  { key: 'other', label: 'Other', icon: 'QuestionMark' },
 ]
 
 // Provide a default export for resilience in dev/preview environments
