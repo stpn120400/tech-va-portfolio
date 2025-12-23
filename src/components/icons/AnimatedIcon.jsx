@@ -13,7 +13,7 @@ import clsx from 'clsx'
  * @param {string} ariaLabel - Accessibility label
  */
 function AnimatedIcon({
-  icon: Icon,
+  icon,
   size = 20,
   color = 'text-white',
   animationType = 'none',
@@ -21,6 +21,8 @@ function AnimatedIcon({
   className = '',
   ariaLabel = '',
 }) {
+  const IconComponent = icon
+  if (!IconComponent) return null
   const animationClasses = clsx(
     {
       'group-hover:scale-110 transition-transform duration-300': animationType === 'hover-scale',
@@ -43,7 +45,7 @@ function AnimatedIcon({
   )
 
   return (
-    <Icon
+    <IconComponent
       size={size}
       className={animationClasses}
       aria-label={ariaLabel}
