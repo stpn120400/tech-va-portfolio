@@ -50,4 +50,7 @@ export {
   Wrench,
   User,
   Maximize2,
+  GraduationCap,
+  Trophy,
+  BadgeCheck,
 } from 'lucide-react'

@@ -3,6 +3,8 @@ import { Link, NavLink } from 'react-router-dom'
 import PrimaryButton from '../components/PrimaryButton'
 import AnimatedIcon from '../components/icons/AnimatedIcon'
 import { Mail, Menu, X } from '../components/icons/icons'
+import stpnLogo from '../assets/vectors/stpn.svg'
+
 
 const navLinks = [
   { label: 'About Me', to: '/about' },
@@ -18,13 +20,14 @@ function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-40">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-6">
-        <div className="mt-4 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-glass backdrop-blur-lg">
-          <Link to="/" className="text-lg font-bold tracking-tight text-white">
-            STPN
+      <div className="w-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-6">
+        <div className="flex items-center justify-between px-4 py-3 mt-4 border rounded-2xl border-white/15 bg-white/10 shadow-glass backdrop-blur-lg">
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
+            <img src={stpnLogo} alt="" aria-hidden className="w-8 h-8" />
+            <span>STPN</span>
           </Link>
 
-          <nav className="hidden items-center gap-2 rounded-full bg-white/5 px-2 py-1 md:flex">
+          <nav className="items-center hidden gap-2 px-2 py-1 rounded-full bg-white/5 md:flex">
             {navLinks.map((item) => (
               <NavLink
                 key={item.to}
@@ -54,7 +57,7 @@ function Navbar() {
 
           <button
             type="button"
-            className="group inline-flex items-center justify-center rounded-lg border border-white/25 p-2 text-white transition md:hidden hover:bg-white/10"
+            className="inline-flex items-center justify-center p-2 text-white transition border rounded-lg group border-white/25 md:hidden hover:bg-white/10"
             aria-label="Toggle navigation"
             aria-expanded={isOpen}
             onClick={() => setIsOpen((prev) => !prev)}
@@ -69,7 +72,7 @@ function Navbar() {
         </div>
 
         {isOpen ? (
-          <div className="mt-2 rounded-2xl border border-white/15 bg-white/10 p-3 shadow-glass backdrop-blur-lg md:hidden">
+          <div className="p-3 mt-2 border rounded-2xl border-white/15 bg-white/10 shadow-glass backdrop-blur-lg md:hidden">
             <nav className="flex flex-col gap-1">
               {navLinks.map((item) => (
                 <NavLink
@@ -86,7 +89,7 @@ function Navbar() {
                   {item.label}
                 </NavLink>
               ))}
-              <PrimaryButton to="/contact" className="w-full justify-center flex items-center gap-2">
+              <PrimaryButton to="/contact" className="flex items-center justify-center w-full gap-2">
                 <AnimatedIcon icon={Mail} size={16} animationType="none" />
                 Contact Me
               </PrimaryButton>

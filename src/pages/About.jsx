@@ -3,6 +3,8 @@ import SectionHeader from '../components/SectionHeader'
 import PersonalInfoCard from '../components/PersonalInfoCard'
 import aboutData from '../data/about.js'
 import SkillsSection from '../components/ui/SkillsSection'
+import ListItemWithIcon from '../components/ui/ListItemWithIcon'
+import { GraduationCap, Trophy, BadgeCheck } from '../components/icons/icons'
 
 function About() {
   return (
@@ -29,13 +31,13 @@ function About() {
       <div className="grid gap-6 lg:grid-cols-3">
         <GlassCard className="p-6 sm:p-7">
           <h3 className="text-xl font-semibold text-white">Education</h3>
-          <ul className="mt-3 space-y-2 text-slate-200/85">
+          <ul className="mt-3 space-y-3 text-slate-200/85">
             {aboutData.education && aboutData.education.map((item, idx) => (
-              <li key={idx}>
+              <ListItemWithIcon icon={GraduationCap} key={idx}>
                 <span className="font-bold text-white">{item.school}</span><br />
                 <span>{item.program}</span><br />
                 <span className="text-sm text-slate-300/80">{item.years}</span>
-              </li>
+              </ListItemWithIcon>
             ))}
           </ul>
         </GlassCard>
@@ -44,17 +46,21 @@ function About() {
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <h3 className="text-xl font-semibold text-white">Achievements & Responsibilities</h3>
-              <ul className="mt-3 space-y-2 text-slate-200/85">
+              <ul className="mt-3 space-y-3 text-slate-200/85">
                 {aboutData.achievementsAndResponsibilities && aboutData.achievementsAndResponsibilities.map((item, idx) => (
-                  <li key={idx}>• <span className="font-semibold">{item.title}:</span> {item.details}</li>
+                  <ListItemWithIcon icon={Trophy} key={idx}>
+                    <span className="font-semibold">{item.title}:</span> {item.details}
+                  </ListItemWithIcon>
                 ))}
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-semibold text-white">Certificates & Licenses</h3>
-              <ul className="mt-3 space-y-2 text-slate-200/85">
+              <ul className="mt-3 space-y-3 text-slate-200/85">
                 {aboutData.certificatesAndLicenses && aboutData.certificatesAndLicenses.map((cert, idx) => (
-                  <li key={idx}>• {cert}</li>
+                  <ListItemWithIcon icon={BadgeCheck} key={idx}>
+                    {cert}
+                  </ListItemWithIcon>
                 ))}
               </ul>
             </div>
