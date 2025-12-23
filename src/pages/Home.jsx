@@ -3,6 +3,8 @@ import GlassCard from '../components/GlassCard'
 import PrimaryButton from '../components/PrimaryButton'
 import SectionHeader from '../components/SectionHeader'
 import SystemsPanel from '../components/ui/SystemsPanel'
+import { Download } from '../components/icons/icons'
+import resumePdf from '../assets/documents/Agustinez_Tech VA_Resume.pdf'
 
 const previewCards = [
   {
@@ -43,6 +45,15 @@ function Home() {
 
             <div className="flex flex-wrap gap-3">
               <PrimaryButton to="/portfolio">View Portfolio</PrimaryButton>
+              <a
+                href={resumePdf}
+                download="Agustinez_Tech_VA_Resume.pdf"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition duration-200 border rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:ring-navy-300 bg-white/10 border-white/20 hover:bg-white/15 active:bg-white/20"
+                aria-label="Download resume as PDF"
+              >
+                <Download className="w-4 h-4" aria-hidden="true" />
+                Download Resume
+              </a>
               <PrimaryButton to="/contact" variant="secondary">
                 Contact Me
               </PrimaryButton>
