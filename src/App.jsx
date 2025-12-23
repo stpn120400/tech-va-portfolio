@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -11,7 +11,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 
 const isMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <MainLayout />,
@@ -33,9 +33,7 @@ const router = createBrowserRouter([
       { path: '*', element: <NotFound /> },
     ],
   },
-], {
-  basename: '/tech-va-portfolio',
-})
+])
 
 function App() {
   return (

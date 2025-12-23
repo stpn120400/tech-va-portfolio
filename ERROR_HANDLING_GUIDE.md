@@ -1,17 +1,18 @@
 # Error Handling Implementation Guide
 
-This portfolio now includes a complete, scalable error-handling system with user-safe error messages and polished error UI states.
+This portfolio includes a scalable, user-safe error-handling system that prioritizes clear messaging, polished fallbacks, and production-ready behavior (including SPA routing on GitHub Pages).
 
-## 📋 Overview
+## Overview
 
-- ✅ **404 Page** — Clean "Page Not Found" with quick links
-- ✅ **Maintenance Mode** — Toggle with `VITE_MAINTENANCE_MODE=true` in `.env`
-- ✅ **Global Error Boundary** — Catches UI crashes and shows fallback UI
-- ✅ **API Wrapper** — Normalized, safe error responses
-- ✅ **Reusable Error Components** — `ErrorState`, `EmptyState`
-- ✅ **Configuration-driven** — All error messages in `src/config/errorMessages.js`
+- 404 Page — Clean “Page Not Found” with quick links
+- Maintenance Mode — Toggle with `VITE_MAINTENANCE_MODE=true` in `.env`
+- Global Error Boundary — Catches UI crashes and shows fallback UI
+- API Wrapper — Normalized, safe error responses
+- Reusable Error Components — `ErrorState`, `EmptyState`
+- Configuration-driven — Error copy in `src/config/errorMessages.js`
+- SPA Routing — GitHub Pages-compatible 404 redirect
 
-## 🗂️ File Structure
+## File Structure
 
 ```
 src/
@@ -35,19 +36,186 @@ src/
     └── errorHandler.js            # Utility functions for safe error handling
 ```
 
-## 🚀 Usage
+---
 
-### 1. **Enable Maintenance Mode**
+## Maintenance Mode
 
-Add to `.env`:
-```
+Enable maintenance UI globally from `.env` (dev and prod builds):
+
+```env
 VITE_MAINTENANCE_MODE=true
 ```
 
-Restart dev server. All routes (except Contact) now show the Maintenance page.
+- Behavior: All routes render the Maintenance page except critical contact paths.
+- Disable by setting `VITE_MAINTENANCE_MODE=false` (default).
+- Use for deployments, breaking changes, or dependency incidents.
 
-Disable by setting:
+Guidance:
+- Keep copy short, calm, and actionable (link to Contact).
+- Avoid technical jargon or exposing internal error details.
+
+---
+
+## Global Error Boundary
+
+Purpose: Catch unexpected React render errors and show a friendly fallback.
+
+Recommended integration:
+
+1. Wrap route-level views inside `ErrorBoundary`.
+2. Provide a minimal, reassuring fallback message.
+3. Offer an action (retry, go home, or contact).
+
+Example usage:
+
+```jsx
+// Wrap a page in the boundary
+<ErrorBoundary>
+  <PageContent />
+</ErrorBoundary>
 ```
+
+Best practices:
+- Do not show stack traces in the UI.
+- Log errors server-side only if/when a backend is introduced.
+- Keep fallback light: clear message, button to recover.
+
+---
+
+## API Error Handling
+
+`services/api/apiClient.js` normalizes fetch errors and returns safe, consistent responses.
+
+Patterns:
+- Map HTTP status → `errorTypes` (e.g., `NETWORK_ERROR`, `UNAUTHORIZED`).
+- Transform unexpected errors to a generic “Something went wrong” message.
+- Never expose raw server messages directly; use `errorMessages.js`.
+
+Basic usage:
+
+```jsx
+import apiClient from '../../services/api/apiClient'
+import { errorTypes } from '../../constants/errorTypes'
+import errorMessages from '../../config/errorMessages'
+
+async function loadData() {
+  const { data, error, type } = await apiClient('/endpoint')
+  if (error) {
+    const message = errorMessages[type || errorTypes.UNKNOWN]
+    // Render <ErrorState message={message} /> or return message to caller
+    return { ok: false, message }
+  }
+  return { ok: true, data }
+}
+```
+
+---
+
+## Reusable Error UI
+
+Use these components to provide consistent, accessible fallbacks:
+
+- `components/ui/ErrorState.jsx` — Display contextual error messages within a section/card.
+- `components/ui/EmptyState.jsx` — Show a calm empty state when no data is available.
+
+Guidelines:
+- Keep iconography subtle; use `aria-hidden="true"` for decorative icons.
+- Ensure text alone conveys meaning (accessible by screen readers).
+- Offer a next step (reload, go home, contact) without overwhelming the UI.
+
+---
+
+## Configuration-Driven Messages
+
+Put all user-facing error strings in `config/errorMessages.js`. Reference them via types defined in `constants/errorTypes.js`.
+
+Benefits:
+- Single source of truth for copy.
+- Consistent tone across the app.
+- Easy localization or future i18n.
+
+Example mapping:
+
+```js
+// errorTypes.js
+export const errorTypes = {
+  NETWORK: 'NETWORK',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  NOT_FOUND: 'NOT_FOUND',
+  UNKNOWN: 'UNKNOWN',
+}
+
+// errorMessages.js
+export default {
+  NETWORK: 'Network error. Please check your connection and try again.',
+  UNAUTHORIZED: 'You are not authorized to view this resource.',
+  NOT_FOUND: 'We couldn’t find what you were looking for.',
+  UNKNOWN: 'Something went wrong. Please try again later.',
+}
+```
+
+---
+
+## SPA Routing on GitHub Pages
+
+GitHub Pages serves static files and doesn’t understand client-side routes. To prevent broken deep links:
+
+- `vite.config.js` sets `base: '/tech-va-portfolio/'`.
+- `public/404.html` redirects unknown paths to `index.html`.
+- React Router uses a `basename` aligned with the repo name.
+
+Outcome: Visiting nested routes directly still loads the SPA and renders the correct page.
+
+---
+
+## Testing & Verification
+
+Use this checklist before deploying:
+
+1. Maintenance toggle
+   - `VITE_MAINTENANCE_MODE=true` shows Maintenance everywhere except Contact.
+   - `false` restores normal routing.
+2. 404 behavior
+   - Navigate to an invalid route → NotFound page in-app.
+   - Direct-link deep routes on GitHub Pages → SPA loads; no white screen.
+3. Error Boundary
+   - Intentionally throw in a child component → Fallback UI shows without crash.
+4. API failures
+   - Simulate network failure → Friendly message via `ErrorState`.
+   - Unauthorized/404 mapping → Correct message from `errorMessages.js`.
+5. Accessibility
+   - Keyboard-only navigation → All actions reachable.
+   - Screen reader → Error messages are understandable.
+   - Reduced motion → No critical content relies on animation.
+
+---
+
+## Operational Guidance
+
+- Keep error copy calm, short, and actionable.
+- Avoid exposing technical details (stack traces, endpoints, IDs).
+- Prefer qualitative assurances (what users can do next) over raw diagnostics.
+- Consider server-side logging or Sentry only when a backend exists.
+
+---
+
+## Future Enhancements
+
+- Centralized telemetry (client → server) with redaction.
+- Per-route boundaries for finer-grained recovery.
+- Localized error messages with i18n.
+- Offline-first messaging for network outages.
+
+---
+
+## Appendix: Quick References
+
+- Error UI: `components/ui/ErrorState.jsx`, `components/ui/EmptyState.jsx`
+- Boundary: `components/ErrorBoundary.jsx`
+- API Wrapper: `services/api/apiClient.js`
+- Messages: `config/errorMessages.js`
+- Types: `constants/errorTypes.js`
+- Pages: `pages/errors/NotFound.jsx`, `pages/errors/Maintenance.jsx`
 VITE_MAINTENANCE_MODE=false
 ```
 

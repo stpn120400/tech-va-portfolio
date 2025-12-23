@@ -4,13 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tech VA Portfolio — Redirecting</title>
-    <meta http-equiv="refresh" content="0;url=/tech-va-portfolio/" />
     <script>
-      // Redirect to the base URL for GitHub Pages SPA support
-      window.location.href = '/tech-va-portfolio/';
+      // Preserve the path and convert to hash-based route for SPA
+      (function () {
+        var base = '/tech-va-portfolio/';
+        var path = window.location.pathname;
+        // Strip base prefix and leading slashes
+        if (path.startsWith(base)) {
+          path = path.slice(base.length);
+        }
+        path = path.replace(/^\/+/, '');
+
+        var search = window.location.search || '';
+        var hash = window.location.hash || '';
+        var target = base + '#/' + path + search + hash;
+        window.location.replace(target);
+      })();
     </script>
   </head>
   <body>
-    <p>Redirecting to homepage...</p>
+    <p>Redirecting…</p>
   </body>
 </html>

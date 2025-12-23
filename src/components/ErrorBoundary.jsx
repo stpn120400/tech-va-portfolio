@@ -26,7 +26,8 @@ class ErrorBoundary extends Component {
   }
 
   handleReload = () => {
-    window.location.href = '/'
+    const base = import.meta.env.BASE_URL || '/'
+    window.location.href = base
   }
 
   render() {
@@ -34,15 +35,15 @@ class ErrorBoundary extends Component {
       const { title, message } = ERROR_MESSAGES.ERROR_BOUNDARY
 
       return (
-        <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="flex items-center justify-center min-h-screen px-4">
           <div className="w-full max-w-md space-y-6">
-            <div className="glass-surface rounded-2xl border border-white/15 bg-white/10 p-8 shadow-glass">
+            <div className="p-8 border glass-surface rounded-2xl border-white/15 bg-white/10 shadow-glass">
               <div className="space-y-4">
                 <h1 className="text-3xl font-semibold text-white">{title}</h1>
                 <p className="text-slate-200/85">{message}</p>
 
                 {this.state.errorId && (
-                  <div className="rounded-lg bg-white/5 p-3">
+                  <div className="p-3 rounded-lg bg-white/5">
                     <p className="text-xs text-slate-300/70">Error ID: {this.state.errorId}</p>
                     <p className="text-xs text-slate-300/70">Share this ID if contacting support.</p>
                   </div>
@@ -51,13 +52,13 @@ class ErrorBoundary extends Component {
                 <div className="flex flex-col gap-3 pt-4 sm:flex-row">
                   <button
                     onClick={this.handleReload}
-                    className="inline-flex items-center justify-center rounded-full bg-navy-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-navy-400"
+                    className="inline-flex items-center justify-center px-5 py-3 text-sm font-semibold text-white transition rounded-full bg-navy-500 hover:bg-navy-400"
                   >
                     Go Home
                   </button>
                   <button
                     onClick={() => window.location.reload()}
-                    className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
+                    className="inline-flex items-center justify-center px-5 py-3 text-sm font-semibold text-white transition border rounded-full border-white/20 bg-white/10 hover:bg-white/15"
                   >
                     Reload Page
                   </button>
