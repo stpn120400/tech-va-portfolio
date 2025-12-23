@@ -158,13 +158,25 @@ export default {
 
 ## SPA Routing on GitHub Pages
 
-GitHub Pages serves static files and doesn’t understand client-side routes. To prevent broken deep links:
+GitHub Pages is static and doesn’t handle client-side routes. This project uses a production-safe HashRouter strategy to make invalid routes and deep links work consistently.
 
-- `vite.config.js` sets `base: '/tech-va-portfolio/'`.
-- `public/404.html` redirects unknown paths to `index.html`.
-- React Router uses a `basename` aligned with the repo name.
+Implementation (Option A: HashRouter)
+- Router: `createHashRouter` (hash-based URLs)
+- Base path: `vite.config.js` sets `base: '/tech-va-portfolio/'` for assets
+- 404 rewrite: `public/404.html` preserves the path and redirects to `/#/path`
+- Local preview: `src/main.jsx` converts non-hash deep paths to hash before React renders (so `.../foo` → `.../#/foo`)
 
-Outcome: Visiting nested routes directly still loads the SPA and renders the correct page.
+URL Examples
+- Home: `/tech-va-portfolio/#/`
+- About: `/tech-va-portfolio/#/about`
+- Invalid (NotFound): `/tech-va-portfolio/#/kl`
+
+Behavior
+- Direct deep link (non-hash) in production (e.g., `/tech-va-portfolio/about`) → 404.html rewrites to hash → SPA resolves to About
+- Invalid non-hash link (e.g., `/tech-va-portfolio/kl`) → rewritten to hash → SPA renders NotFound (no silent redirect to Home)
+
+Note
+- If you later require clean URLs, switch to BrowserRouter and keep a path-preserving 404.html rewrite pattern; however, HashRouter is the most reliable for GitHub Pages.
 
 ---
 
@@ -172,21 +184,33 @@ Outcome: Visiting nested routes directly still loads the SPA and renders the cor
 
 Use this checklist before deploying:
 
-1. Maintenance toggle
+1) Maintenance toggle
    - `VITE_MAINTENANCE_MODE=true` shows Maintenance everywhere except Contact.
    - `false` restores normal routing.
-2. 404 behavior
-   - Navigate to an invalid route → NotFound page in-app.
-   - Direct-link deep routes on GitHub Pages → SPA loads; no white screen.
-3. Error Boundary
+2) Routing and 404 behavior (HashRouter)
+  - Local (preview):
+    - Open `/tech-va-portfolio/#/about` → renders About
+    - Open `/tech-va-portfolio/#/kl` → renders NotFound
+    - Open non-hash `/tech-va-portfolio/kl` → auto-rewrites to hash → NotFound
+  - Production (GitHub Pages):
+    - Open `/tech-va-portfolio/#/about` → renders About; refresh works
+    - Open `/tech-va-portfolio/#/kl` → renders NotFound
+    - Open non-hash `/tech-va-portfolio/kl` → 404.html rewrites to hash → NotFound
+3) Error Boundary
    - Intentionally throw in a child component → Fallback UI shows without crash.
-4. API failures
+4) API failures
    - Simulate network failure → Friendly message via `ErrorState`.
    - Unauthorized/404 mapping → Correct message from `errorMessages.js`.
-5. Accessibility
+5) Accessibility
    - Keyboard-only navigation → All actions reachable.
    - Screen reader → Error messages are understandable.
    - Reduced motion → No critical content relies on animation.
+
+---
+
+## Home Navigation in Error Fallbacks
+
+The global `ErrorBoundary` uses `import.meta.env.BASE_URL` to navigate back to the correct base path in production (GitHub Pages): this prevents broken “Go Home” buttons when the site is hosted in a subpath.
 
 ---
 
